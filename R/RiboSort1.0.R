@@ -114,19 +114,49 @@ p=as.matrix(profile)#their respective abundances. Converted to matrix p.
 if(dataformat=="abimultiple")
 {
 orig=read.csv(data[k],skip=1,fill=TRUE)
-roworig=nrow(orig)
 colorig=ncol(orig)
-obs=roworig/2
-names=colnames(orig)[2:colorig]
 
-orig1=orig[1:obs,]
-orig2=orig[(obs+1):roworig,]
-
-for (i in 2:colorig)
+#----Removing empty columns from the original file 
+colsums=c()
+for (u in 2:colorig)
 {
-col1=as.matrix(orig1[,(i)])
-col2=as.matrix(orig2[,(i)])
-profile=matrix(data=c(col1,col2),nrow=obs)
+	una=sum(orig[,u], na.rm=TRUE)
+	colsums=c(colsums,una)
+}
+
+del=c()
+for (v in 1:length(colsums))
+{
+	if (identical(all.equal(colsums[v],0,tolerance=0), TRUE))
+	{
+	del=c(del,-(v+1))
+	}
+}
+
+ld=length(del)
+if (identical(all.equal(ld,0,tolerance=0), TRUE))
+{
+	orig2=orig
+}else
+{	
+	orig2=orig[,del]
+}
+#----empty columns removed
+
+
+roworig2=nrow(orig2)
+colorig2=ncol(orig2)
+obs=roworig2/2
+names=colnames(orig2)[2:colorig2]
+
+origa=orig2[1:obs,]
+origb=orig2[(obs+1):roworig2,]
+
+for (i in 2:colorig2)
+{
+cola=as.matrix(origa[,(i)])
+colb=as.matrix(origb[,(i)])
+profile=matrix(data=c(cola,colb),nrow=obs)
 
 rid=c()
 for (w in 1:obs)
@@ -137,7 +167,7 @@ rid=c(rid,-w)
 }
 }
 p=profile[rid,]
-
+p=matrix(p,ncol=2)
 
 
 #----------------------------------------------------------------------------------------------------------------------------
@@ -149,9 +179,15 @@ origdetections=c(origdetections,r)
 diff=c()
 mergecount=0
 
+if (identical(all.equal(r,1,tolerance=0), TRUE))
+{
+diff=c(diff,1)#A vector with element greater than 0.5 to avoid the min(diff) statement below producing a warning.
+}else
+{
 for (i in 1:(r-1))#For all rows excluding the last one, the difference 
 {#between that ribotype and the next one is measured.
 diff=c(diff,(p[i+1,1]-p[i,1]))#diff1 is the vector of these differences.
+}
 }
 
 while (min(diff)<0.5)#Merge the associated pair
@@ -304,7 +340,7 @@ finalsample=matrix(data=c(n,a),nrow=length(n),ncol=3)#Creates matrix with 1st co
 dataribo=c(dataribo,a[,1])#Adding first column (ribotypes) to the data array.
 dataabund=c(dataabund,a[,2])#Adding first column (abundances) to the data array.
 
-}#end of for abimultiple (i in 2:colorig) loop, going thru individual samples
+}#end of for abimultiple (i in 2:colorig2) loop, going thru individual samples
 }else#END OF if(dataformat=="abimultiple") TRUE statement
 {
 #----------------------------------------------------------------------------------------------------------------------------
@@ -317,9 +353,15 @@ origdetections=c(origdetections,r)
 diff=c()
 mergecount=0
 
+if (identical(all.equal(r,1,tolerance=0), TRUE))
+{
+diff=c(diff,1)#A vector with element greater than 0.5 to avoid the min(diff) statement below producing a warning.
+}else
+{
 for (i in 1:(r-1))#For all rows excluding the last one, the difference 
 {#between that ribotype and the next one is measured.
 diff=c(diff,(p[i+1,1]-p[i,1]))#diff1 is the vector of these differences.
+}
 }
 
 while (min(diff)<0.5)#Merge the associated pair
@@ -480,9 +522,38 @@ names=c()
 for (k in 1:nfiles)
 {
 orig=read.csv(data[k],skip=1,fill=TRUE)
-roworig=nrow(orig)
 colorig=ncol(orig)
-names=c(names,colnames(orig)[2:colorig])
+
+#----Removing empty columns from the original file 
+colsums=c()
+for (u in 2:colorig)
+{
+	una=sum(orig[,u], na.rm=TRUE)
+	colsums=c(colsums,una)
+}
+
+del=c()
+for (v in 1:length(colsums))
+{
+	if (identical(all.equal(colsums[v],0,tolerance=0), TRUE))
+	{
+	del=c(del,-(v+1))
+	}
+}
+
+ld=length(del)
+if (identical(all.equal(ld,0,tolerance=0), TRUE))
+{
+	orig2=orig
+}else
+{	
+	orig2=orig[,del]
+}
+#----empty columns removed
+
+roworig2=nrow(orig2)
+colorig2=ncol(orig2)
+names=c(names,colnames(orig2)[2:colorig2])
 }
 nfiles=length(names)
 }

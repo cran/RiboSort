@@ -1,6 +1,6 @@
 \name{RiboSort}
 \alias{RiboSort}
-\title{Classify and Concatenate Microbial Community Profiles}
+\title{Preparation of Microbial Community Profiles for Statistical Analyses}
 \description{RiboSort is a function for convenient editing of ARISA and TRFLP data. It is designed to eliminate the laborious task of manually classifying community fingerprints in microbial community studies.}
 \usage{RiboSort(data, dataformat = "standard", dye="B", output = "proportions", zerorows = FALSE, repeats = 1, mergerepeats = "none")}
 \arguments{
